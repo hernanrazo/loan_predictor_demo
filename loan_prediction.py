@@ -106,6 +106,17 @@ df['LoanAmount_log'] = np.log(df['LoanAmount'])
 df['LoanAmount_log'].hist(bins = 20)
 LoanAmount_log.savefig(graph_folder_path + 'LoanAmount_log.png')
 
+#combine applicant income and co-applicant income
+#take a log transformation and graph it
+combined_income = plt.figure()
+plt.title('Total Income Log Transformation')
+df['TotalIncome'] = df['ApplicantIncome'] + df['CoapplicantIncome']
+df['TotalIncome_log'] = np.log(df['TotalIncome'])
+df['TotalIncome_log'].hist(bins = 20)
+combined_income.savefig(graph_folder_path + 'combined_income_log.png')
+
+
+
 
 
 
