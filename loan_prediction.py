@@ -2,6 +2,10 @@ import pandas as pd
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+from sklearn import metrics
+from sklearn.cross_validation import KFold
+from sklearn.preprocessing import LabelEncoder
+from sklearn.ensemble import RandomForestClassifier
 
 #get training data into a dataframe
 df = pd.read_csv('/Users/hernanrazo/pythonProjects/loan_prediction/train_data.csv')
@@ -115,9 +119,51 @@ df['TotalIncome_log'] = np.log(df['TotalIncome'])
 df['TotalIncome_log'].hist(bins = 20)
 combined_income.savefig(graph_folder_path + 'combined_income_log.png')
 
+#convert categorical variables into numeric ones 
+variables = ['Gender', 'Married', 'Dependents', 'Education', 'Self_Employed',
+'Property_Area', 'Loan_Status']
+
+label_encoder = LabelEncoder()
+
+for var in variables:
+	df[var] = label_encoder.fit_transform(df[var])
+df.dtypes
 
 
+#finally start making models 
 
+#create function for constructing classification models and printing
+#out its performance
+def classification_model(model, data, predictors, outcome):
+
+	model.fit(data[predictors], data[outcome])
+	prediction = model.predict(data[predictors])
+	
+	accuracy = metrics.accuracy_score(prediction, data[outcome])
+	print('Accuracy: %s' % '{0:.3%}'.format(accuracy))
+
+	kf = KFold(data.shape[0], n_folds = 5)
+	error = []
+
+	for train, test in kf:
+		train_predictors = (data[predictors].iloc[train,:])
+		train_target = data[outcome].iloc[train]
+		model.fit(train_predictors, train_target)
+
+		error.append(model.score(data[predictors].iloc[test,:],
+			data[outcome].iloc[test]))
+
+		print('Cross-Validation Score: %s' % '{0:.3%}'.format(np, mean(error)))
+		model.fit(data[predictors], data[outcome])
+
+#use the random forest algorithm
+outcome_var = 'Loan_Status'
+model = RandomForestClassifier(n_estimators = 100)
+predictor_var = ['Gender', 'Married', 'Dependents', 'Education', 'Self_Employed',
+'Loan_Amount_Term', 'Credit_History', 'Property_Area' , 'LoanAmount_log',
+'TotalIncome_log']
+
+classification_model(model, df, predictor_var, outcome_var)
 
 
 
