@@ -74,7 +74,9 @@ m_ls_graph.plot(kind = 'bar', stacked = True, color = ['red', 'green'],
 plt.savefig(graph_folder_path + 'm_ls_graph.png')
 
 #now deal with empty cells and null values in the dataset
+
 #check for empty cells and null data 
+print('before: ')
 print(df.apply(lambda x: sum(x.isnull()), axis = 0))
 
 #print empty line for when reading in terminal
@@ -87,6 +89,30 @@ print(df['Self_Employed'].value_counts())
 #since most self employed applicants get rejected, it is safe to 
 #fill empty cells as 'no'
 df['Self_Employed'].fillna('No', inplace = True)
+
+#print empty line for when reading in terminal
+print(' ')
+
+#use a frequency table to see most common loan amount term value
+print(df['Loan_Amount_Term'].value_counts())
+
+#since most people fall into the 360 value, it is safe to 
+#fill empty cells with 360
+df['Loan_Amount_Term'].fillna(360, inplace = True)
+
+#print empty line for when reading in terminal
+print(' ')
+
+#use a frequency table to see how many people do or do not have 
+#a credit history that meets the loan guidelines 
+print(df['Credit_History'].value_counts())
+
+#since most applicants do have qualifying credit histories, it is 
+#safe to mark empty cells with 1
+df['Credit_History'].fillna(1, inplace = True)
+
+#print empty line for when reading in terminal
+print(' ')
 
 #create pivot table for values in self employed and education categories
 pivotTable = df.pivot_table(values = 'LoanAmount', index = 'Self_Employed',
@@ -129,6 +155,11 @@ for var in variables:
 	df[var] = label_encoder.fit_transform(df[var])
 df.dtypes
 
+#double check if all empty cells, null values, and categorical 
+#values have been accounted for
+print('after:')
+print(df.isnull().sum())
+print(' ')
 
 #finally start making models 
 
@@ -136,25 +167,30 @@ df.dtypes
 #out its performance
 def classification_model(model, data, predictors, outcome):
 
+	#fit model and make prediction
 	model.fit(data[predictors], data[outcome])
 	prediction = model.predict(data[predictors])
 	
+	#configure and print accuracy
 	accuracy = metrics.accuracy_score(prediction, data[outcome])
 	print('Accuracy: %s' % '{0:.3%}'.format(accuracy))
 
-	kf = KFold(data.shape[0], n_folds = 5)
+	#start k-fold validation
+	kf = KFold(data.shape[0], n_folds = 5, shuffle = False)
 	error = []
 
+	#filter, target, and train the model
 	for train, test in kf:
-		train_predictors = (data[predictors].iloc[train,:])
+		train_predictors = (data[predictors].iloc[train, :])
 		train_target = data[outcome].iloc[train]
 		model.fit(train_predictors, train_target)
 
-		error.append(model.score(data[predictors].iloc[test,:],
+		error.append(model.score(data[predictors].iloc[test, :],
 			data[outcome].iloc[test]))
 
-		print('Cross-Validation Score: %s' % '{0:.3%}'.format(np, mean(error)))
-		model.fit(data[predictors], data[outcome])
+	#print cross-validation value and fit the model again
+	print('Cross-Validation Score: %s' % '{0:.3%}'.format(np.mean(error)))
+	model.fit(data[predictors], data[outcome])
 
 #use the random forest algorithm
 outcome_var = 'Loan_Status'
@@ -165,16 +201,22 @@ predictor_var = ['Gender', 'Married', 'Dependents', 'Education', 'Self_Employed'
 
 classification_model(model, df, predictor_var, outcome_var)
 
+#after first training session, accuracy is extremely overfitting to the 
+#training data. To fix this, figure out the most important features of 
+#applicants by taking those with the highest importance matrix
+series = pd.Series(model.feature_importances_, 
+	index = predictor_var).sort_values(ascending = False)
 
+print(series)
+print(' ')
 
+#retrain the model with the top five features
+model = RandomForestClassifier(n_estimators = 25, min_samples_split = 25,
+	max_depth = 7, max_features = 1)
 
+predictor_var = ['Credit_History', 'TotalIncome_log', 'LoanAmount_log', 
+'Dependents', 'Property_Area']
 
-
-
-
-
-
-
-
-
+print('New model: ')
+classification_model(model, df, predictor_var, outcome_var)
 
