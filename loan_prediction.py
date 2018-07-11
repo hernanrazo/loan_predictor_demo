@@ -79,7 +79,8 @@ plt.savefig(graph_folder_path + 'm_ls_graph.png')
 print('before: ')
 print(df.apply(lambda x: sum(x.isnull()), axis = 0))
 
-#print empty line for when reading in terminal
+#print empty lines between tables for 
+#when reading in terminal
 print(' ')
 
 #use a frequency table to see how many self employed applicants
@@ -89,8 +90,6 @@ print(df['Self_Employed'].value_counts())
 #since most self employed applicants get rejected, it is safe to 
 #fill empty cells as 'no'
 df['Self_Employed'].fillna('No', inplace = True)
-
-#print empty line for when reading in terminal
 print(' ')
 
 #use a frequency table to see most common loan amount term value
@@ -99,8 +98,6 @@ print(df['Loan_Amount_Term'].value_counts())
 #since most people fall into the 360 value, it is safe to 
 #fill empty cells with 360
 df['Loan_Amount_Term'].fillna(360, inplace = True)
-
-#print empty line for when reading in terminal
 print(' ')
 
 #use a frequency table to see how many people do or do not have 
@@ -110,8 +107,6 @@ print(df['Credit_History'].value_counts())
 #since most applicants do have qualifying credit histories, it is 
 #safe to mark empty cells with 1
 df['Credit_History'].fillna(1, inplace = True)
-
-#print empty line for when reading in terminal
 print(' ')
 
 #create pivot table for values in self employed and education categories
@@ -200,6 +195,7 @@ predictor_var = ['Gender', 'Married', 'Dependents', 'Education', 'Self_Employed'
 'TotalIncome_log']
 
 classification_model(model, df, predictor_var, outcome_var)
+print(' ')
 
 #after first training session, accuracy is extremely overfitting to the 
 #training data. To fix this, figure out the most important features of 
