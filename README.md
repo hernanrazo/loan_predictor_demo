@@ -32,7 +32,7 @@ Now we focus on categorical variables and how they influence an applicants' loan
 
 ![Education Level](https://github.com/hrazo7/loan_predictor_demo/blob/master/graphs/e_ls_graph.png) ![Marital Status](https://github.com/hrazo7/loan_predictor_demo/blob/master/graphs/m_ls_graph.png) ![Credit History](https://github.com/hrazo7/loan_predictor_demo/blob/master/graphs/ch_ls_graph.png)  
 
-There is a clear preference for people that are educated, married, and with existing credit history. But to get the best possible picture, we need to clean the datatset by fixing null and empty values. To do this, we use the below command:
+There is a clear preference for people that are educated, married, and with existing credit history. But to get the best possible picture, we need to clean the datatset by fixing null and empty values. To do this, we use the following command:
 
 ```python
 print(df.apply(lambda x: sum(x.isnull()), axis = 0))
@@ -40,7 +40,7 @@ print(df.apply(lambda x: sum(x.isnull()), axis = 0))
 
 This command prints out the total number of missing values for each column.  
 
-To fill these values, use a frequency table to get most common value for that category. for example, a frequency table for getting data on self employed applicants that got approved or denied can be obtained by this command:
+To fill these values, use a frequency table to get most common value for that category. for example, a frequency table for getting data on self employed applicants that got approved or denied can be obtained by the following command:
 
 ```python
 print(df['Self_Employed'].value_counts())
@@ -97,7 +97,7 @@ To make sure we got all values accounted for, run the following command:
 print(df.isnull().sum())
 ```  
 
-it should return all zeroes.  
+It should return all zeroes.  
 
 To make the model, first we define a function that fits, trains, and prints out accuracy and cross-validation scores:
 
