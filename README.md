@@ -157,7 +157,7 @@ print('New model: ')
 classification_model(model, df, predictor_var, outcome_var)
 ```  
 
-This new model has a much better score that will translate better to other data.  
+This new model has a much better score that will translate better to other datasets.  
 
 Acknowledgements
 ---
